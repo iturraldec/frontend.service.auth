@@ -2,8 +2,13 @@ import { useAuthContext } from "contexts/authContext";
 import { useState } from "react";
 
 function Login() {
-  const {login} = useAuthContext();
+  const { login } = useAuthContext();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  function handleEmailChange(event) {
+    setEmail(event.target.value);
+  }
 
   function handlePasswordChange(event) {
     setPassword(event.target.value);
@@ -21,7 +26,10 @@ function Login() {
     <div>
       login
       <form onSubmit={handleSubmit}>
-        <input type="text" value={password} onChange={handlePasswordChange} />
+        <p>Ingresa el correo</p>
+        <input type="email" value={email} onChange={handleEmailChange} placeholder="Email" />
+        <p>Ingresa el password</p>
+        <input type="text" value={password} onChange={handlePasswordChange} placeholder="Password" />
         <button type="submit">Iniciar sesión</button>
       </form>
     </div>
