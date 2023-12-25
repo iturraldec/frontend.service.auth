@@ -1,13 +1,13 @@
 import { useAuthContext } from "contexts/authContext";
 import { useState } from "react";
-import { Alert } from "react-bootstrap";
-import "./Login.css";
+import { Alert, Form } from "react-bootstrap";
+import "styles/Login.css";
 
 export default function Login() {
-  const { login } = useAuthContext();
-  const [email, setEmail] = useState('');
+  const { login }               = useAuthContext();
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState(false);
+  const [message, setMessage]   = useState('');
 
   function handleEmailChange(event) {
     setEmail(event.target.value);
@@ -20,8 +20,7 @@ export default function Login() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    login(email, password);
-    setErrorMsg(true);
+    login(email, password, setMessage);
   }
 
   return (
@@ -30,9 +29,9 @@ export default function Login() {
         <div className="Auth-form-content">
           <h3 className="Auth-form-title">Sing In</h3>
 
-          {errorMsg && <Alert variant="danger">Credenciales incorrectas!</Alert>}
+          {message.length > 0 && <Alert className="mb-3" variant="danger">{message}</Alert>}
 
-          <div className="form-group mt-3">
+          <div className="form-group mb-3">
             <label>Email address</label>
             <input
               type="email"
@@ -43,7 +42,7 @@ export default function Login() {
             />
           </div>
 
-          <div className="form-group mt-3">
+          <div className="form-group mb-3">
             <label>Password</label>
             <input
               type="password"
@@ -54,14 +53,25 @@ export default function Login() {
             />
           </div>
 
-          <div className="d-grid gap-2 mt-3">
+          <Form.Group className="mb-3">
+            <Form.Label>Rol</Form.Label>
+            <Form.Control as="select">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </Form.Control>
+          </Form.Group>
+
+          <div className="d-grid gap-2 mb-3">
             <button type="submit" className="btn btn-primary">
               Log In
             </button>
           </div>
 
           <p className="forgot-password text-right">
-            Recuperar <a href="#">password</a>
+            Recuperar <a href="#">password!</a>
           </p>
         </div>
       </form>

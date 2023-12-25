@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LOGIN, PRIVATE, LOGOUT } from "./config/paths";
 import { AuthContextProvider } from "contexts/authContext";
 import Home from "views/Home";
-import Login from "views/Login/Login";
+import Login from "views/Login";
 import Private from "views/Private";
 import Logout from "views/Logout";
 import PublicRoute from "components/router/PublicRoute";
