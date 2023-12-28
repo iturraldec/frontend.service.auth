@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { LOGIN, PRIVATE, LOGOUT } from "./config/paths";
 import { AuthContextProvider } from "contexts/authContext";
 import Home from "views/Home";
@@ -10,22 +10,64 @@ import Logout from "views/Logout";
 import PublicRoute from "components/router/PublicRoute";
 import PrivateRoute from "components/router/PrivateRoute";
 
+async function getRoles() {
+  try {
+    const response = await fetch('http://localhost:8000/api/roles', {
+                            headers: {
+                              'Accept': 'application/json',
+                              'Content-type': 'application/json'
+                            }
+    });
+    const data = await response.json();
+
+    return data;
+  }
+  catch(error) {
+    console.error(error);
+    return null;
+  }
+}
+
+const router = createBrowserRouter([
+  {
+    path: PRIVATE,
+    element: <PrivateRoute />,
+    children: [
+      {
+        index: true,
+        element: <Private />
+      },
+      {
+        path: LOGOUT,
+        element: <Logout />
+      }
+    ]
+  },
+  {
+    path: '/',
+    element: <PublicRoute />,
+    children: [
+      {
+        index: true,
+        element: <Home />
+      },
+      {
+        path: LOGIN,
+        loader: getRoles,
+        element: <Login />
+      }
+    ]
+  },
+  {
+    path:'*',
+    element: 'Not Found'
+  }
+]);
+
 function App() {
   return (
     <AuthContextProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<PublicRoute />}>
-            <Route index element={<Home />} />
-            <Route path={LOGIN} element={<Login />} />
-          </Route>
-
-          <Route path={PRIVATE} element={<PrivateRoute />}>
-            <Route index element={<Private />} />
-            <Route path={LOGOUT} element={<Logout />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </AuthContextProvider>
   );
 }

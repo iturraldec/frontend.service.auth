@@ -1,13 +1,15 @@
 import { useAuthContext } from "contexts/authContext";
 import { useState } from "react";
 import { Alert, Form } from "react-bootstrap";
+import { useLoaderData } from "react-router";
 import "styles/Login.css";
 
 export default function Login() {
-  const { login }               = useAuthContext();
+  const { role, login }               = useAuthContext();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage]   = useState('');
+  const roles                   = useLoaderData();
 
   function handleEmailChange(event) {
     setEmail(event.target.value);
@@ -15,6 +17,10 @@ export default function Login() {
 
   function handlePasswordChange(event) {
     setPassword(event.target.value);
+  }
+
+  function handleRoleChange(event) {
+    role(event.target.value)
   }
 
   function handleSubmit(event) {
@@ -54,14 +60,16 @@ export default function Login() {
           </div>
 
           <Form.Group className="mb-3">
-            <Form.Label>Rol</Form.Label>
-            <Form.Control as="select">
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </Form.Control>
+            <Form.Label>Enter Role</Form.Label>
+            <Form.Select
+              onChange={handleRoleChange}
+            >
+              <option>Seleccione el Rol:</option>
+              {
+                roles.map((item) =>
+                  <option key={item.id} value={item.id}>{item.name}</option>)
+              }
+            </Form.Select>
           </Form.Group>
 
           <div className="d-grid gap-2 mb-3">

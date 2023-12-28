@@ -5,8 +5,8 @@ const MY_AUTH_APP = 'SERVICE_AUTH_TOKEN';
 export const AuthContext = createContext();
 
 export function AuthContextProvider({children}) {
-  const [isAuthenticated, setIsAuthenticated] = useState(window.localStorage.getItem(MY_AUTH_APP) ?? false);
-  const [role, setRole]                       = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => window.localStorage.getItem(MY_AUTH_APP) ?? false);
+  const [userRole, setUserRole]               = useState('');
 
   const login = useCallback(async function (email, password, setMessage) {
     let data = {
@@ -32,6 +32,10 @@ export function AuthContextProvider({children}) {
     else{
       setMessage('Error: Credenciales incorrectas!');
     }
+  }, []);
+
+  const role = useCallback(function(_role) {
+    setUserRole(_role);
   }, []);
 
   const logout = useCallback(function () {
