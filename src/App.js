@@ -1,74 +1,61 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { LOGIN, PRIVATE, LOGOUT } from "./config/paths";
-import { AuthContextProvider } from "contexts/authContext";
-import Home from "views/Home";
-import Login from "views/Login";
-import Private from "views/Private";
-import Logout from "views/Logout";
-import PublicRoute from "components/router/PublicRoute";
-import PrivateRoute from "components/router/PrivateRoute";
+import Layout from './components/Layout/layout';
+import ErrorPage from 'components/views/error-page';
+import ServiceAuth from 'components/views/service-auth';
+import Home from 'components/views/home';
+import Dashboard from 'components/views/dashboard';
+import Roles from 'components/views/roles';
+import Permissions from 'components/views/permissions';
+import Users from 'components/views/users';
+import Logout from 'components/views/logout';
 
-async function getRoles() {
-  try {
-    const response = await fetch('http://localhost:8000/api/roles', {
-                            headers: {
-                              'Accept': 'application/json',
-                              'Content-type': 'application/json'
-                            }
-    });
-    const data = await response.json();
-
-    return data;
-  }
-  catch(error) {
-    console.error(error);
-    return null;
-  }
-}
-
-const router = createBrowserRouter([
+let router = createBrowserRouter([
   {
-    path: PRIVATE,
-    element: <PrivateRoute />,
+    path: "/",
+    element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        element: <Private />
+        element: <Dashboard />
       },
       {
-        path: LOGOUT,
-        element: <Logout />
-      }
-    ]
-  },
-  {
-    path: '/',
-    element: <PublicRoute />,
-    children: [
+        path:"service",
+        element: <ServiceAuth />
+      },
       {
-        index: true,
+        path: "home",
         element: <Home />
       },
       {
-        path: LOGIN,
-        loader: getRoles,
-        element: <Login />
+        path: "dashboard",
+        element: <Dashboard />
+      },
+      {
+        path:"roles",
+        element: <Roles />
+      },
+      {
+        path:"permissions",
+        element: <Permissions />
+      },
+      {
+        path:"users",
+        element: <Users />
+      },
+      {
+        path:"logout",
+        element: <Logout />
       }
     ]
-  },
-  {
-    path:'*',
-    element: 'Not Found'
   }
 ]);
 
 function App() {
   return (
-    <AuthContextProvider>
       <RouterProvider router={router} />
-    </AuthContextProvider>
   );
 }
 

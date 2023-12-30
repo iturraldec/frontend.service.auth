@@ -6,7 +6,6 @@ export const AuthContext = createContext();
 
 export function AuthContextProvider({children}) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => window.localStorage.getItem(MY_AUTH_APP) ?? false);
-  const [userRole, setUserRole]               = useState('');
 
   const login = useCallback(async function (email, password, setMessage) {
     let data = {
@@ -14,6 +13,7 @@ export function AuthContextProvider({children}) {
       'password': password
     };
 
+    // VALIDAR
     let response = await fetch('http://localhost:8000/api/auth/login', {
                       method: 'POST',
                       body: JSON.stringify(data),
@@ -25,17 +25,13 @@ export function AuthContextProvider({children}) {
 
     let dataResponse = await response.json();
 
-    if(dataResponse.status === '1') {
+    if(dataResponse.state === '1') {
       window.localStorage.setItem(MY_AUTH_APP, dataResponse.data.access_token);
       setIsAuthenticated(true);
     }
     else{
       setMessage('Error: Credenciales incorrectas!');
     }
-  }, []);
-
-  const role = useCallback(function(_role) {
-    setUserRole(_role);
   }, []);
 
   const logout = useCallback(function () {
@@ -45,10 +41,9 @@ export function AuthContextProvider({children}) {
 
   const value = useMemo(() => ({
     isAuthenticated,
-    role,
     login,
     logout
-  }), [isAuthenticated, role, login, logout]);
+  }), [isAuthenticated, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
