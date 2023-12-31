@@ -10,6 +10,7 @@ import Roles from 'components/views/roles';
 import Permissions from 'components/views/permissions';
 import Users from 'components/views/users';
 import Logout from 'components/views/logout';
+import getDashboard from './components/router/loaders/getDashboard';
 
 let router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ let router = createBrowserRouter([
     children: [
       {
         index: true,
+        loader: getDashboard,
         element: <Dashboard />
       },
       {
@@ -31,6 +33,7 @@ let router = createBrowserRouter([
       },
       {
         path: "dashboard",
+        loader: getDashboard,
         element: <Dashboard />
       },
       {
