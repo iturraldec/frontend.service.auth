@@ -20,9 +20,9 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {loader.data.data.map((item) => {
+                    {loader.data.data.map((item, id) => {
                       return (
-                        <tr>
+                        <tr key={item.concepto}>
                           <td>{item.concepto}</td>
                           <td>{item.cantidad}</td>
                         </tr>

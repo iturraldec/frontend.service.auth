@@ -11,6 +11,7 @@ import Permissions from 'components/views/permissions';
 import Users from 'components/views/users';
 import Logout from 'components/views/logout';
 import getDashboard from './components/router/loaders/getDashboard';
+import getPermissions from 'components/router/loaders/getPermissions';
 
 let router = createBrowserRouter([
   {
@@ -37,12 +38,13 @@ let router = createBrowserRouter([
         element: <Dashboard />
       },
       {
-        path:"roles",
-        element: <Roles />
+        path:"permissions",
+        loader: getPermissions,
+        element: <Permissions />
       },
       {
-        path:"permissions",
-        element: <Permissions />
+        path:"roles",
+        element: <Roles />
       },
       {
         path:"users",

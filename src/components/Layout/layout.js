@@ -14,8 +14,8 @@ export default function Layout() {
             <Nav className="me-auto">
               <Nav.Link as={Link} to="home">Home</Nav.Link>
               <Nav.Link as={Link} to="dashboard">Dashboard</Nav.Link>
-              <Nav.Link as={Link} to="roles">Roles</Nav.Link>
               <Nav.Link as={Link} to="permissions">Permisos</Nav.Link>
+              <Nav.Link as={Link} to="roles">Roles</Nav.Link>
               <Nav.Link as={Link} to="users">Usuarios</Nav.Link>
               <Nav.Link as={Link} to="logout">Logout</Nav.Link>
             </Nav>
