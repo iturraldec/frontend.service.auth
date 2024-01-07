@@ -7,11 +7,10 @@ import ServiceAuth from 'components/views/service-auth';
 import Home from 'components/views/home';
 import Dashboard from 'components/views/dashboard';
 import Roles from 'components/views/roles';
-import Permissions from 'components/views/permissions';
+import Permissions from 'components/views/permission/permissions';
 import Users from 'components/views/users';
 import Logout from 'components/views/logout';
 import getDashboard from './components/router/loaders/getDashboard';
-import getPermissions from 'components/router/loaders/getPermissions';
 
 let router = createBrowserRouter([
   {
@@ -39,7 +38,6 @@ let router = createBrowserRouter([
       },
       {
         path:"permissions",
-        loader: getPermissions,
         element: <Permissions />
       },
       {
