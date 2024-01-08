@@ -1,15 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Container, Row, Col, Table, Button } from 'react-bootstrap';
-import Card from 'react-bootstrap/Card';
+import { Button } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import FormBootstrap from 'react-bootstrap/Form';
 import MyToast from 'components/myToast';
-import { BsPencilSquare } from "react-icons/bs";
-import { BsFillTrash3Fill } from "react-icons/bs";
-import MyPagination from 'components/myPagination';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import useFetch from 'hooks/useFetch';
+import PermissionsListView from './permissionsListView';
 
 function getUrl(page) {
   return `http://localhost:8000/api/permissions?page=${page}`;
@@ -43,20 +40,20 @@ export default function Permissions() {
   }
 
   //
-  const handleCreate = useCallback(() => {
+  function handleCreate () {
     setId('0');
     setName('');
     setSlug('');
     setShowModal(true);
-  });
+  };
 
   //
-  const handleUpdate = useCallback(permission => {
+  function handleUpdate(permission) {
     setId(permission.id);
     setName(permission.name);
     setSlug(permission.slug);
     setShowModal(true);
-  });
+  };
 
   //
   async function handleSubmit(event) {
@@ -145,54 +142,16 @@ export default function Permissions() {
     <>
       <MyToast message={message} handleMessageClose={handleMessageClose} />
 
-      <Container>
-        <Row className="mt-3 justify-content-center">
-          <Col xs={6}>
-            <Card className="text-center">
-              <Card.Header><h4>Permisos</h4></Card.Header>
-              <Card.Body>
-                <div className="d-grid gap-2 mb-2">
-                  <Button variant="primary" size="sm" onClick={handleCreate}>
-                    Agregar
-                  </Button>
-                </div>
-
-                <Table striped bordered hover size="sm">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Slug</th>
-                      <th></th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {fetchState.state === 'success' && fetchState.data.data.data.map((item, id) => (
-                        <tr key={item.id}>
-                          <td>{item.name}</td>
-                          <td>{item.slug}</td>  
-                          <td>
-                            <Button variant="secondary" size="sm" onClick={() => handleUpdate(item)}><BsPencilSquare /></Button>
-                          </td>
-                          <td>
-                            <Button variant="danger" size="sm" onClick={() => handleDelete(item.id)}><BsFillTrash3Fill /></Button>
-                          </td>
-                        </tr>
-                      )
-                    )}
-                  </tbody>
-                </Table>
-
-                {totalPage > 1 && <p className="text-center">
-                  <MyPagination total={totalPage} current={currentPage} onChangePage={handleChangePage} />
-                </p>
-                }
-
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+      {fetchState.state === 'success' && <PermissionsListView 
+        handleCreate={handleCreate}
+        state={fetchState.state}
+        dataList={fetchState.data.data.data}
+        handleUpdate={handleUpdate}
+        handleDelete={handleDelete}
+        totalPage={totalPage}
+        currentPage={currentPage}
+        handleChangePage={handleChangePage}
+      />}
       
       <Modal  
         show={showModal}

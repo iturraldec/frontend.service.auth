@@ -8,6 +8,8 @@ export default function useFetch(url, parameters = {}) {
   });
 
   useEffect(() => {
+    let ignore = false;
+
     async function getData() {
       try {
         setFetchState(oldValue => ({
@@ -19,11 +21,13 @@ export default function useFetch(url, parameters = {}) {
         if(response.ok) {
           let dataJson = await response.json();
   
-          setFetchState({
-            state:'success',
-            data: dataJson,
-            error: null
-          });
+          if (!ignore) {
+              setFetchState({
+                state:'success',
+                data: dataJson,
+                error: null
+              });
+          }
         }
         else {
           setFetchState({
@@ -43,6 +47,9 @@ export default function useFetch(url, parameters = {}) {
     };
 
     getData();
+
+    return () => ignore = true;
+
   }, [url]);
 
   return fetchState;
