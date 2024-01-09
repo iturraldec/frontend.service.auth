@@ -1,7 +1,5 @@
-import { Container, Row, Col, Table, Button } from 'react-bootstrap';
-import Card from 'react-bootstrap/Card';
-import { BsPencilSquare } from "react-icons/bs";
-import { BsFillTrash3Fill } from "react-icons/bs";
+import { Container, Row, Col, Table, Button, Card } from 'react-bootstrap';
+import { BsPencilSquare, BsFillTrash3Fill } from "react-icons/bs";
 import MyPagination from 'components/myPagination';
 
 export default function PermissionsListView(props) {

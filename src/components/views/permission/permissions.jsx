@@ -1,12 +1,10 @@
-import { Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import FormBootstrap from 'react-bootstrap/Form';
 import MyToast from 'components/myToast';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import useFetch from 'hooks/useFetch';
 import PermissionsListView from './permissionsListView';
+import PermissionsModalView from './permissionsModalView';
 
 function getUrl(page) {
   return `http://localhost:8000/api/permissions?page=${page}`;
@@ -153,53 +151,16 @@ export default function Permissions() {
         handleChangePage={handleChangePage}
       />}
       
-      <Modal  
+      <PermissionsModalView 
         show={showModal}
-        backdrop="static"
-        keyboard={false}
-        onHide={handleCloseModal}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>{id === '0' ? "Crear permiso" : "Modificar permiso"}</Modal.Title>
-        </Modal.Header>
-        
-        <form onSubmit={handleSubmit}>
-        <Modal.Body>
-          <FormBootstrap.Group className="mb-3">
-            <FormBootstrap.Label>Nombre</FormBootstrap.Label>
-            <FormBootstrap.Control 
-              type="text"
-              id="name"
-              name="name" 
-              value={name}
-              onChange={handleChangeName}
-              placeholder="Ingrese permiso"
-            />
-          </FormBootstrap.Group>
+        handleCloseModal={handleCloseModal}
+        handleSubmit={handleSubmit}
+        id={id}
+        name={name}
+        handleChangeName={handleChangeName}
+        slug={slug}
+      />
 
-          <FormBootstrap.Group className="mb-3">
-            <FormBootstrap.Label>Slug</FormBootstrap.Label>
-            <FormBootstrap.Control
-              type='text'
-              id='slug'
-              name='slug'
-              value={slug}
-              placeholder='Slug'
-              readOnly 
-            />
-          </FormBootstrap.Group>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="primary">
-            Grabar
-          </Button>
-        </Modal.Footer>
-        </form>
-      </Modal>
     </>
   );
 }
