@@ -2,10 +2,10 @@
 import useFetch from "hooks/useFetch";
 import RolesListView from "./rolesListView";
 import RolesModalView from "./rolesModalView";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 //
-let emptyPermission = {
+let emptyRole = {
   id: '',
   name:'',
   slug:'',
@@ -19,25 +19,30 @@ function getUrl(page) {
 
 //
 export default function Roles() {
-  const [rol, setRol] = useState(emptyPermission);
+  const [role, setRole] = useState(emptyRole);
   const [pagination, setPagination] = useState({
     current: 1,
     total: 0
   });
   const [showModal, setShowModal] = useState(false);
-  let roles = useFetch(getUrl(pagination.current));
-  let permissions = useFetch('http://localhost:8000/api/permissions');
+  const permissions = useFetch('http://localhost:8000/api/permissions');
+  const roles = useFetch(getUrl(pagination.current));
 
   //
   function handleCreate() {
-    console.log('created');
-    setRol(emptyPermission);
+    setRole(emptyRole);
     handleShowModal();
   };
 
   //
-  function handleUpdate() {
-    console.log('update');
+  function handleUpdate(role) {
+    setRole({
+      id: role.id,
+      name: role.name,
+      slug: role.slug,
+      permissions: role.permissions.map(item => item.id)
+    });
+    setShowModal(true);
   };
 
   //
@@ -57,12 +62,41 @@ export default function Roles() {
 
   //
   function handleChangeName(event) {
-    //setName(event.target.value.toUpperCase());
+    let texto = event.target.value.toUpperCase().trim();
+
+    setRole(oldValue => (
+      {
+        ...oldValue, 
+        name: texto,
+        slug: texto.replace(/ /g, "-").toLowerCase()
+      }));
   };
 
   //
-  function handleSubmit() {
-    console.log("envie");
+  function handleChangePermissions(event) {
+    let checkId = parseInt(event.target.id)
+
+    setRole(oldValue => (
+      {
+        ...oldValue,
+        permissions: (event.target.checked ? [...role.permissions, checkId] : role.permissions.filter(a => a !== checkId))
+    }));
+  };
+
+  //
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    fetch('http://localhost:8000/api/roles',{
+         method: 'post',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify(role)
+       })
+       .then(response => response.json())
+       .then(json => console.log(json));
   };
 
   return (
@@ -77,14 +111,15 @@ export default function Roles() {
         currentPage={pagination.current}
       />}
 
-      <RolesModalView 
+      {permissions.data && <RolesModalView 
         show={showModal}
-        roles={roles}
-        permissionsDataList={permissions.data}
+        role={role}
+        permissionsDataList={permissions.data.data.map(({id,name}) => ({id,name}))}
         handleShowModal={handleShowModal}
         handleChangeName={handleChangeName}
+        handleChangePermissions={handleChangePermissions}
         handleSubmit={handleSubmit}
-      />
+      />}
     </>
   );
 }

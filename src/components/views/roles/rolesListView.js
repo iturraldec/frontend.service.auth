@@ -31,7 +31,10 @@ export default function RolesListView(props) {
                       <tr key={item.id}>
                         <td>{item.name}</td>
                         <td>{item.slug}</td>  
-                        <td>permisos</td>  
+                        <td>{
+                              item.permissions.map((element, index) => <h6 key={index}>{element.name},</h6>)
+                            }
+                        </td>  
                         <td>
                           <Button variant="secondary" size="sm" onClick={() => props.handleUpdate(item)}><BsPencilSquare /></Button>
                         </td>

@@ -10,7 +10,7 @@ export default function RolesModalView(props) {
       onHide={props.handleShowModal}
     >
       <Modal.Header closeButton>
-        <Modal.Title>{props.roles.id === '' ? "Crear rol" : "Modificar rol"}</Modal.Title>
+        <Modal.Title>{props.role.id === '' ? "Crear rol" : "Modificar rol"}</Modal.Title>
       </Modal.Header>
       
       <form onSubmit={props.handleSubmit}>
@@ -21,20 +21,35 @@ export default function RolesModalView(props) {
             type="text"
             id="name"
             name="name" 
-            value={props.roles.name}
+            value={props.role.name}
             onChange={props.handleChangeName}
             placeholder="Ingrese rol"
           />
         </FormBootstrap.Group>
 
         <FormBootstrap.Group className="mb-3">
+          <FormBootstrap.Label>Slug</FormBootstrap.Label>
+          <FormBootstrap.Control 
+            type="text"
+            id="slug"
+            name="slug" 
+            value={props.role.slug}
+            placeholder="Slug"
+            readOnly
+          />
+        </FormBootstrap.Group>
+
+        <FormBootstrap.Group className="mb-3">
           <FormBootstrap.Label>Permisos</FormBootstrap.Label>
           { props.permissionsDataList && 
-            props.permissionsDataList.data.map((item,id) => 
+            props.permissionsDataList.map(item => 
               <FormBootstrap.Check 
                 type="switch"
+                key={item.id}
                 id={item.id}
                 label={item.name}
+                onChange={props.handleChangePermissions}
+                checked={props.role.permissions.includes(item.id)}
               />)
           }
         </FormBootstrap.Group>
