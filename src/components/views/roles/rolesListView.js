@@ -32,7 +32,7 @@ export default function RolesListView(props) {
                         <td>{item.name}</td>
                         <td>{item.slug}</td>  
                         <td>{
-                              item.permissions.map((element, index) => <h6 key={index}>{element.name},</h6>)
+                              item.permissions.map((element, index) => <small key={index}>{element.name},</small>)
                             }
                         </td>  
                         <td>

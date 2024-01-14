@@ -3,6 +3,8 @@ import useFetch from "hooks/useFetch";
 import RolesListView from "./rolesListView";
 import RolesModalView from "./rolesModalView";
 import { useState } from "react";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 
 //
 let emptyRole = {
@@ -46,8 +48,27 @@ export default function Roles() {
   };
 
   //
-  function handleDelete() {
-    console.log('delete');
+  function handleDelete(id) {
+    withReactContent(Swal).fire({
+      title: "Seguro de ELIMINAR el rol y sus relaciones?",
+      text: "No podras revertir esta acción!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, eliminalo!",
+      cancelButtonText: "Cancelar"
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:8000/api/roles/${id}`,{
+              method: 'delete',
+              headers: {
+                'Accept': 'application/json'
+              }
+        })
+      } 
+    });
   };
 
   //
@@ -62,7 +83,7 @@ export default function Roles() {
 
   //
   function handleChangeName(event) {
-    let texto = event.target.value.toUpperCase().trim();
+    let texto = event.target.value.toUpperCase();
 
     setRole(oldValue => (
       {
@@ -87,16 +108,30 @@ export default function Roles() {
   function handleSubmit(event) {
     event.preventDefault();
 
-    fetch('http://localhost:8000/api/roles',{
-         method: 'post',
-         headers: {
-           'Accept': 'application/json',
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify(role)
-       })
-       .then(response => response.json())
-       .then(json => console.log(json));
+    if (role.id === '') {
+      fetch('http://localhost:8000/api/roles',{
+          method: 'post',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(role)
+      })
+      .then(response => response.json())
+      .then(json => console.log(json));
+      }
+      else {
+        fetch(`http://localhost:8000/api/roles/${role.id}`,{
+          method: 'put',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(role)
+        })
+        .then(response => response.json())
+        .then(json => console.log(json));
+      }
   };
 
   return (
