@@ -1,0 +1,45 @@
+import { useState } from "react";
+
+export default function useFetch() {
+  const [fetchState, setFetchState] = useState({
+    state:  '',
+    data:   null,
+    error:  null
+  });
+
+  async function getData(url) {
+    try {
+      setFetchState(oldValue => ({
+        ...oldValue, state: 'Loading...'
+      }));
+
+      let response = await fetch(url);
+
+      if(response.ok) {
+        let dataJson = await response.json();
+
+        setFetchState({
+          state:'success',
+          data: dataJson,
+          error: null
+        });
+      }
+      else {
+        setFetchState({
+          state: "error",
+          data: null,
+          error: new Error(response.statusText)
+        });
+      }
+    }
+    catch(_error) {
+      setFetchState({
+        state: "error",
+        data: null,
+        error: _error
+      });
+    }
+  };
+
+  return {fetchState, getData};
+}

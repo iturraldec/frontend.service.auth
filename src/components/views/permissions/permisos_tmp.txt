@@ -1,0 +1,191 @@
+import { useEffect, useState } from 'react';
+import MyToast from 'components/myToast';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import useFetch from 'hooks/useFetch';
+import PermissionsListView from './permissionsListView';
+import PermissionsModalView from './permissionsModalView';
+
+//
+function getUrl(page) {
+  return `http://localhost:8000/api/permissions?page=${page}`;
+};
+
+//
+const emptyPermission = {
+  id: '',
+  name: '',
+  slug: ''
+};
+
+//
+const emptyPage = {
+  url: '',
+  current: 0,
+  total: 0
+};
+
+//
+export default function Permissions() {
+  const [page, setPage]               = useState(emptyPage);
+  const [permission, setPermission]   = useState(emptyPermission);
+  const {fetchState, getData}         = useFetch();
+  const [showModal, setShowModal]     = useState(false);
+  const [message, setMessage]         = useState('');
+
+  //
+  useEffect(() => {
+    handleChangePage(1);
+  }, []);
+
+  //
+  useEffect(() => {
+    if(fetchState.state === 'success') {
+      setPage(oldValue => ({
+        ...oldValue, 
+        current: fetchState.data.data.current_page,
+        total: fetchState.data.data.last_page
+      }));
+    }
+  }, [page]);
+
+  //
+  function handleChangeName(e) {
+    let texto = e.target.value.toUpperCase();
+
+    setPermission(oldValue => ({
+      ...oldValue,
+      name: texto,
+      slug: texto.replace(/ /g, "-").toLowerCase()
+    }));
+  }
+
+  //
+  function handleCreate () {
+    setPermission(emptyPermission);
+    setShowModal(true);
+  };
+
+  //
+  function handleUpdate(permission) {
+    setPermission({
+      id: permission.id,
+      name: permission.name,
+      slug: permission.slug
+    });
+    setShowModal(true);
+  };
+
+  //
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    if (permission.id === '') {
+      fetch('http://localhost:8000/api/permissions',{
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(permission)
+      });
+
+      setMessage("Permiso agregado...");
+    }
+    else {
+       fetch(`http://localhost:8000/api/permissions/${permission.id}`,{
+        method: 'put',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(permission)
+      });
+
+      setMessage("Permiso actualizado...");
+    }
+    setShowModal(false);
+    reload();
+  }
+
+  //
+  function handleDelete(_id) {
+    withReactContent(Swal).fire({
+      title: "Seguro de ELIMINAR el permiso y sus relaciones?",
+      text: "No podras revertir esta acción!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, eliminalo!",
+      cancelButtonText: "Cancelar"
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        deletePermission(_id);
+      } 
+    });
+  }
+
+  //
+  async function deletePermission(_id) {
+    await fetch(`http://localhost:8000/api/permissions/${_id}`,{
+                method: 'delete',
+                headers: {
+                  'Accept': 'application/json'
+         }
+    });
+    reload();
+    setMessage("Permiso eliminado...");
+  }
+
+  //
+  async function handleChangePage(_page) {
+    setPage({...emptyPage, url: getUrl(_page)});
+    await fetchState.getData(page.url);
+  };
+
+  //
+  function handleCloseModal () {
+    setShowModal(false);
+  }
+
+  //
+  function handleMessageClose() {
+    setMessage('');
+  }
+
+  //
+  function reload() {
+    fetchState.getData(page.url);
+  };
+
+  //
+  return (
+    <>
+      <MyToast message={message} handleMessageClose={handleMessageClose} />
+
+      {fetchState.state === 'success' && <PermissionsListView 
+        handleCreate={handleCreate}
+        state={fetchState.state}
+        dataList={fetchState.data.data.data}
+        handleUpdate={handleUpdate}
+        handleDelete={handleDelete}
+        totalPage={page.total}
+        currentPage={page.current}
+        handleChangePage={handleChangePage}
+      />}
+      
+      {/* <PermissionsModalView 
+        show={showModal}
+        handleCloseModal={handleCloseModal}
+        handleSubmit={handleSubmit}
+        id={permission.id}
+        name={permission.name}
+        handleChangeName={handleChangeName}
+        slug={permission.slug}
+      /> */}
+
+    </>
+  );
+}

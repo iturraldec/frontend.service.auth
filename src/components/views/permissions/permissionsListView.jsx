@@ -1,6 +1,6 @@
 import { Container, Row, Col, Table, Button, Card } from 'react-bootstrap';
 import { BsPencilSquare, BsFillTrash3Fill } from "react-icons/bs";
-import MyPagination from 'components/myPagination';
+//import MyPagination from 'components/myPagination';
 
 export default function PermissionsListView(props) {
   return (
@@ -8,7 +8,7 @@ export default function PermissionsListView(props) {
       <Row className="mt-3 justify-content-center">
         <Col xs={6}>
           <Card className="text-center">
-            <Card.Header><h4>Lista de Permisos</h4></Card.Header>
+            <Card.Header><h4>Listado de Permisos</h4></Card.Header>
             <Card.Body>
               <div className="d-grid gap-2 mb-2">
                 <Button variant="primary" size="sm" onClick={props.handleCreate}>
@@ -26,7 +26,7 @@ export default function PermissionsListView(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {props.dataList.map((item, id) => (
+                  {props.permissions.data.map((item, id) => (
                       <tr key={item.id}>
                         <td>{item.name}</td>
                         <td>{item.slug}</td>  
@@ -42,10 +42,10 @@ export default function PermissionsListView(props) {
                 </tbody>
               </Table>
 
-              {props.totalPage > 1 && <div className="text-center">
+              {/*props.totalPage > 1 && <div className="text-center">
                   <MyPagination total={props.totalPage} current={props.currentPage} onChangePage={props.handleChangePage} />
                 </div>
-              }
+                  */}
 
             </Card.Body>
           </Card>
