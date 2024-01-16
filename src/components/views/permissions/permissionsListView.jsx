@@ -1,6 +1,6 @@
 import { Container, Row, Col, Table, Button, Card } from 'react-bootstrap';
 import { BsPencilSquare, BsFillTrash3Fill } from "react-icons/bs";
-//import MyPagination from 'components/myPagination';
+import MyPagination from 'components/myPagination';
 
 export default function PermissionsListView(props) {
   return (
@@ -42,10 +42,9 @@ export default function PermissionsListView(props) {
                 </tbody>
               </Table>
 
-              {/*props.totalPage > 1 && <div className="text-center">
-                  <MyPagination total={props.totalPage} current={props.currentPage} onChangePage={props.handleChangePage} />
-                </div>
-                  */}
+              <div className="text-center">
+                <MyPagination permissions={props.permissions} onChangePage={props.handleChangePage} />
+              </div>
 
             </Card.Body>
           </Card>

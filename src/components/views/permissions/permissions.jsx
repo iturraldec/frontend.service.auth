@@ -48,6 +48,11 @@ export default function Permissions() {
   };
 
   //
+  function handleChangePage(url){
+    getData(url);
+  };
+
+  //
   return (
     <>
       <MyToast message={message} handleCloseMessage={handleCloseMessage} />
@@ -57,6 +62,7 @@ export default function Permissions() {
         handleCreate={handleCreate}
         handleUpdate={handleUpdate}
         handleDelete={handleDelete}
+        handleChangePage={handleChangePage}
       />}
     </>
   );
