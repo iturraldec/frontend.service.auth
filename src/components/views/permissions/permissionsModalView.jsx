@@ -10,7 +10,7 @@ export default function PermissionsModalView(props) {
       onHide={props.handleCloseModal}
     >
       <Modal.Header closeButton>
-        <Modal.Title>{props.id === '0' ? "Crear permiso" : "Modificar permiso"}</Modal.Title>
+        <Modal.Title>{props.permission.id === '' ? "Crear permiso" : "Modificar permiso"}</Modal.Title>
       </Modal.Header>
       
       <form onSubmit={props.handleSubmit}>
@@ -21,7 +21,7 @@ export default function PermissionsModalView(props) {
             type="text"
             id="name"
             name="name" 
-            value={props.name}
+            value={props.permission.name}
             onChange={props.handleChangeName}
             placeholder="Ingrese permiso"
           />
@@ -33,7 +33,7 @@ export default function PermissionsModalView(props) {
             type='text'
             id='slug'
             name='slug'
-            value={props.slug}
+            value={props.permission.slug}
             placeholder='Slug'
             readOnly 
           />

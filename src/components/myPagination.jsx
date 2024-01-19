@@ -14,7 +14,7 @@ export default function MyPagination({permissions, onChangePage}) {
       </Pagination.Item>
     );
   }
-
+  
   return (
     <Pagination className="d-flex justify-content-center">{items}</Pagination>
   );

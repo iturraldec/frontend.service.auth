@@ -26,7 +26,7 @@ export default function PermissionsListView(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {props.permissions.data.map((item, id) => (
+                  {props.permissions != null && props.permissions.data.map((item, id) => (
                       <tr key={item.id}>
                         <td>{item.name}</td>
                         <td>{item.slug}</td>  
