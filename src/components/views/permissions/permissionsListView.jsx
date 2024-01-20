@@ -26,7 +26,7 @@ export default function PermissionsListView(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {props.permissions.data.map((item, id) => (
+                  {props.permissions.data?.map((item, id) => (
                       <tr key={item.id}>
                         <td>{item.name}</td>
                         <td>{item.slug}</td>  
@@ -43,7 +43,7 @@ export default function PermissionsListView(props) {
               </Table>
 
               <div className="text-center">
-                <MyPagination permissions={props.permissions} onChangePage={props.handleChangePage} />
+                <MyPagination pageData={props.permissions} onChangePage={props.handleChangePage} />
               </div>
 
             </Card.Body>

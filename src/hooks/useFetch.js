@@ -1,56 +1,55 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function useFetch() {
-  const [state,setState] = useState('');
-  const [data,setData]   = useState(null);
-  const [error,setError] = useState('');
+  const [fetchState, setFetchState] = useState({
+    lastUrl : '',
+    state   : '',
+    data    : null,
+    error   : null
+  });
 
   //
-  async function getData(url){
-    let response = await fetch(url);
-    
-    if(response.ok) {
-      let dataJson = await response.json();
+  async function fetchData(url,options = null) {
+    let response;
 
-      setData(dataJson);
-      setState('success');
-    };
+    try {
+      setFetchState(oldValue => ({
+        ...oldValue,
+        state: 'running'
+      }));
 
-    return response;
-  };
+      response = await (options === null ? fetch(url) : fetch(url,options));
 
-  //
-  async function postData(url, options){
-    let response = await fetch(url, options);
+      if(response.ok) {
+        let dataJson = await response.json();
 
-    if(response.ok) {
-      let dataJson = await response.json();
-
-      setData(dataJson);
-      setState('success');
-    };
-
-    return response;
-  };
-
-  //
-  async function deleteData(url, options = {
-                                  method: 'delete',
-                                  headers: {
-                                    'Accept': 'application/json'
-                                  }}
-                            ) {
-    let response = await fetch(url, options);
-    
-    if(response.ok) {
-      let dataJson = await response.json();
-
-      setData(dataJson);
-      setState('success');
+        setFetchState({
+          lastUrl: url,
+          state:'success',
+          data: dataJson,
+          error: null
+        });
+      }
+      else {
+        setFetchState({
+          lastUrl: url,
+          state: "error",
+          data: null,
+          error: new Error(response.statusText)
+        });
+      }
     }
+    catch(_error) {
+      setFetchState({
+        lastUrl: url,
+        state: "error",
+        data: null,
+        error: _error
+      });
+    };
 
     return response;
   };
 
-  return {state, data, getData, postData, deleteData};
-}
+  return {fetchState, fetchData};
+};

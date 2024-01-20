@@ -1,16 +1,16 @@
 import { Pagination } from "react-bootstrap";
 
-export default function MyPagination({permissions, onChangePage}) {
+export default function MyPagination({pageData, onChangePage}) {
   let items = [];
 
-  for (let page = 1; page <= permissions.last_page; page++) {
+  for (let page = 1; page <= pageData.last_page; page++) {
     items.push(
       <Pagination.Item 
         key={page}
-        active={permissions.links[page].active} 
-        onClick={() => onChangePage(permissions.links[page].url)}
+        active={pageData.links[page].active} 
+        onClick={() => onChangePage(pageData.links[page].url)}
       >
-        {permissions.links[page].label}
+        {pageData.links[page].label}
       </Pagination.Item>
     );
   }
@@ -18,4 +18,4 @@ export default function MyPagination({permissions, onChangePage}) {
   return (
     <Pagination className="d-flex justify-content-center">{items}</Pagination>
   );
-}
+};

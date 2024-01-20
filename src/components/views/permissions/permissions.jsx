@@ -16,15 +16,9 @@ const emptyPermission = {
 //
 export default function Permissions() {
   const [permission,setPermission]  = useState(emptyPermission);
-  const [permissions,setPermissions]= useState(null);
   const [showModal,setShowModal]    = useState(false);
   const [message,setMessage]        = useState('');
-  let {state,
-       data,
-       getData,
-       postData,
-       deleteData
-      }                             = useFetch();
+  let {fetchState,fetchData}        = useFetch();
   
   //
   useEffect(() => {
@@ -32,20 +26,20 @@ export default function Permissions() {
   }, []);
 
   //
-  useEffect(() => {
-    if (state === 'success' && data?.data?.current_page) {
-      setPermissions(data.data);
-    };
-  }, [data]);
-
-  //
   function handleChangePage(url){
-    getData(url);
+    setMessage("Cargando datos...");
+    fetchData(url)
+    .then(() => handleCloseMessage());
   };
 
   //
   function handleCloseModal(){
     setShowModal(false);
+  };
+
+  //
+  function handleCloseMessage(){
+    setMessage('');
   };
 
   //
@@ -55,8 +49,13 @@ export default function Permissions() {
   }
   
   //
-  function handleUpdate(){
-
+  function handleUpdate(permission) {
+    setPermission({
+      id: permission.id,
+      name: permission.name,
+      slug: permission.slug
+    });
+    setShowModal(true);
   };
 
   //
@@ -72,41 +71,65 @@ export default function Permissions() {
             },
             body: JSON.stringify(permission)
       };
-      let response = postData('http://localhost:8000/api/permissions',options)
-                      .then(result => {
+      let response = fetchData('http://localhost:8000/api/permissions',options)
+                    .then(result => {
+                      if(result.ok) {
                         setShowModal(false);
                         reload();
-                      });
+                        setMessage('Permiso creado...');
+                      };
+                    });
     }
-    // else {
-    //   await fetchData(`http://localhost:8000/api/permissions/${permission.id}`,{
-    //           method: 'put',
-    //           headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json'
-    //           },
-    //           body: JSON.stringify(permission)
-    //         });
-    // };
-
+    else {
+      let options = {
+            method: 'put',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(permission)
+      };
+      let response = fetchData(`http://localhost:8000/api/permissions/${permission.id}`,options)
+                    .then(result => {
+                      if(result.ok) {
+                        setShowModal(false);
+                        reload();
+                      };
+                    });
+    };
   };
 
   //
   function handleDelete(id){
-    let response = deleteData(`http://localhost:8000/api/permissions/${id}`,{
-                method: 'delete',
-                headers: {
-                  'Accept': 'application/json'
-                }
-          })
-          .then(result => {
-            reload();
-          })
+    withReactContent(Swal).fire({
+      title: "Seguro de ELIMINAR el permiso y sus relaciones?",
+      text: "No podras revertir esta acción!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, eliminalo!",
+      cancelButtonText: "Cancelar"
+    })
+    .then(result => {
+      if (result.isConfirmed) {
+        let options = {
+              method: 'delete',
+              headers: {
+                'Accept': 'application/json'
+              }
+        };
+        fetchData(`http://localhost:8000/api/permissions/${id}`,options)
+        .then(result => {
+          if(result.ok) reload();
+        });
+      };
+    });
   };
 
   //
   function reload(){
-    getData(permissions.links.find(item => item.active).url);
+    fetchData(fetchState.lastUrl);
   };
 
   //
@@ -123,8 +146,10 @@ export default function Permissions() {
   //
   return (
     <>
-     { permissions !== null && <PermissionsListView 
-        permissions={permissions}
+      <MyToast message={message} handleCloseMessage={handleCloseMessage} />
+
+      { fetchState.data?.data && <PermissionsListView 
+        permissions={fetchState.data.data}
         handleCreate={handleCreate}
         handleUpdate={handleUpdate}
         handleDelete={handleDelete}
@@ -140,4 +165,4 @@ export default function Permissions() {
       />
     </>
   );
-}
+};

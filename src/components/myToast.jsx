@@ -1,14 +1,14 @@
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import Toast from 'react-bootstrap/Toast';
 
-export default function MyToast({message, handleMessageClose}) {
+export default function MyToast({message, handleCloseMessage}) {
   return (
     <ToastContainer
       className="p-3"
       position="top-end"
       style={{ zIndex: 1 }}
     >
-      <Toast show={message.length > 0} onClose={handleMessageClose} delay={3000} autohide>
+      <Toast show={message.length > 0} onClose={handleCloseMessage} delay={3000} autohide>
         <Toast.Header>
           <strong className="me-auto">Atención!</strong>
         </Toast.Header>
@@ -16,4 +16,4 @@ export default function MyToast({message, handleMessageClose}) {
       </Toast>
     </ToastContainer>
   )
-}
+};
