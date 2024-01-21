@@ -42,9 +42,7 @@ export default function PermissionsListView(props) {
                 </tbody>
               </Table>
 
-              <div className="text-center">
-                <MyPagination pageData={props.permissions} onChangePage={props.handleChangePage} />
-              </div>
+              <MyPagination pageData={props.permissions} onChangePage={props.handleChangePage} />
 
             </Card.Body>
           </Card>

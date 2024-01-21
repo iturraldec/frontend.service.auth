@@ -1,10 +1,10 @@
-
+import { useEffect, useState } from "react";
+import MyToast from "components/myToast";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import useFetch from "hooks/useFetch";
 import RolesListView from "./rolesListView";
 import RolesModalView from "./rolesModalView";
-import { useState } from "react";
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 
 //
 let emptyRole = {
@@ -15,20 +15,56 @@ let emptyRole = {
 };
 
 //
-function getUrl(page) {
-  return `http://localhost:8000/api/roles?page=${page}`;
-};
-
-//
 export default function Roles() {
-  const [role, setRole] = useState(emptyRole);
-  const [pagination, setPagination] = useState({
-    current: 1,
-    total: 0
-  });
-  const [showModal, setShowModal] = useState(false);
-  const permissions = useFetch('http://localhost:8000/api/permissions');
-  const roles = useFetch(getUrl(pagination.current));
+  const [role, setRole]               = useState(emptyRole);
+  const [roles,setRoles]              = useState(null);
+  const [permissions,setPermissions]  = useState([]);
+  const [showModal, setShowModal]     = useState(false);
+  const [message,setMessage]          = useState('');
+  let {fetchState,fetchData}          = useFetch();
+
+  //
+  useEffect(() => {
+    fetchData('http://localhost:8000/api/permissions')
+    .then(() => {
+      handleChangePage('http://localhost:8000/api/roles?page=1');
+    });
+  }, []);
+
+  //
+  useEffect(() => {
+    let ignore = false;
+
+    if(!ignore) {
+      if(fetchState.data?.message === 'Listado de permisos.') {
+        setPermissions(fetchState.data.data);
+      }
+      else if(fetchState.data?.message === 'Listado de roles, paginados.') {
+        setRoles(fetchState.data.data);
+      }
+    }
+
+    return () => {
+      ignore = true;
+    }
+    
+  }, [fetchState])
+
+  //
+  function handleChangePage(url){
+    setMessage("Cargando roles...");
+    fetchData(url)
+    .then(() => {
+      if(fetchState.state === 'success') {
+        setMessage('');
+      }
+    });
+  };
+
+  //
+  function handleCloseMessage(){
+    setMessage('');
+  };
 
   //
   function handleCreate() {
@@ -44,7 +80,7 @@ export default function Roles() {
       slug: role.slug,
       permissions: role.permissions.map(item => item.id)
     });
-    setShowModal(true);
+    handleShowModal();
   };
 
   //
@@ -59,22 +95,22 @@ export default function Roles() {
       confirmButtonText: "Si, eliminalo!",
       cancelButtonText: "Cancelar"
     })
-    .then((result) => {
+    .then(result => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:8000/api/roles/${id}`,{
-              method: 'delete',
-              headers: {
-                'Accept': 'application/json'
-              }
+        fetchData(`http://localhost:8000/api/roles/${id}`,{
+          method: 'delete',
+          headers: {
+            'Accept': 'application/json'
+          }
         })
-      } 
+        .then(() => {
+          if(fetchState.state === 'success') {
+            reload();
+          }
+        });
+      };
     });
   };
-
-  //
-  function handleChangePage() {
-    console.log("cpage")
-  }
 
   //
   function handleShowModal() {
@@ -85,71 +121,78 @@ export default function Roles() {
   function handleChangeName(event) {
     let texto = event.target.value.toUpperCase();
 
-    setRole(oldValue => (
-      {
-        ...oldValue, 
-        name: texto,
-        slug: texto.replace(/ /g, "-").toLowerCase()
-      }));
+    setRole(oldValue => ({
+      ...oldValue, 
+      name: texto,
+      slug: texto.replace(/ /g, "-").toLowerCase()
+    }));
   };
 
   //
   function handleChangePermissions(event) {
     let checkId = parseInt(event.target.id)
 
-    setRole(oldValue => (
-      {
-        ...oldValue,
-        permissions: (event.target.checked ? [...role.permissions, checkId] : role.permissions.filter(a => a !== checkId))
+    setRole(oldValue => ({
+      ...oldValue,
+      permissions: (event.target.checked ? [...role.permissions, checkId] : role.permissions.filter(a => a !== checkId))
     }));
   };
 
   //
   function handleSubmit(event) {
-    event.preventDefault();
+    let response;
 
+    event.preventDefault();
     if (role.id === '') {
-      fetch('http://localhost:8000/api/roles',{
-          method: 'post',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(role)
-      })
-      .then(response => response.json())
-      .then(json => console.log(json));
-      }
-      else {
-        fetch(`http://localhost:8000/api/roles/${role.id}`,{
-          method: 'put',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(role)
-        })
-        .then(response => response.json())
-        .then(json => console.log(json));
-      }
+      response = fetchData('http://localhost:8000/api/roles',{
+                    method: 'post',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(role)
+                  });
+    }
+    else {
+      response = fetchData(`http://localhost:8000/api/roles/${role.id}`,{
+                    method: 'put',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(role)
+                  });
+    };
+
+    response.then(() => {
+      if(fetchState.state === 'success') {
+        handleShowModal();
+        reload();
+      };
+    });
+  };
+
+  //
+  function reload(){
+    fetchData(fetchState.lastUrl);
   };
 
   return (
     <>
-      {roles.state === 'success' && <RolesListView 
+      <MyToast message={message} handleCloseMessage={handleCloseMessage} />
+
+      {roles !== null && <RolesListView
+        dataList={roles}
         handleCreate={handleCreate}
         handleUpdate={handleUpdate}
         handleDelete={handleDelete}
         handleChangePage={handleChangePage}
-        dataList={roles.data.data.data}
-        totalPage={pagination.total}
-        currentPage={pagination.current}
       />}
 
-      {permissions.data && <RolesModalView 
+      {permissions.length > 0 && <RolesModalView 
         show={showModal}
         role={role}
-        permissionsDataList={permissions.data.data.map(({id,name}) => ({id,name}))}
+        permissionsDataList={permissions.map(({id,name}) => ({id,name}))}
         handleShowModal={handleShowModal}
         handleChangeName={handleChangeName}
         handleChangePermissions={handleChangePermissions}
@@ -157,4 +200,4 @@ export default function Roles() {
       />}
     </>
   );
-}
+};

@@ -27,7 +27,7 @@ export default function RolesListView(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {props.dataList.map((item, id) => (
+                  {props.dataList.data.map((item, id) => (
                       <tr key={item.id}>
                         <td>{item.name}</td>
                         <td>{item.slug}</td>  
@@ -47,10 +47,7 @@ export default function RolesListView(props) {
                 </tbody>
               </Table>
 
-              {props.totalPage > 1 && <div className="text-center">
-                  <MyPagination total={props.totalPage} current={props.currentPage} onChangePage={props.handleChangePage} />
-                </div>
-              }
+              <MyPagination pageData={props.dataList} onChangePage={props.handleChangePage} />
 
             </Card.Body>
           </Card>
@@ -58,4 +55,4 @@ export default function RolesListView(props) {
       </Row>
     </Container>
   );
-}
+};
