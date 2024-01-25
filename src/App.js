@@ -8,7 +8,7 @@ import Home from 'components/views/home';
 import Dashboard from 'components/views/dashboard';
 import Roles from 'components/views/roles/roles';
 import Permissions from 'components/views/permissions/permissions';
-import Users from 'components/views/users';
+import Users from 'components/views/users/users';
 import Logout from 'components/views/logout';
 import getDashboard from './components/router/loaders/getDashboard';
 
