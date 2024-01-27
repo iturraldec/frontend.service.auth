@@ -30,7 +30,7 @@ export default function UserModalView(props) {
         <FormBootstrap.Group className="mb-3">
           <FormBootstrap.Label>E-mail</FormBootstrap.Label>
           <FormBootstrap.Control 
-            type="password"
+            type="email"
             id="email"
             name="email" 
             value={props.user.email}
@@ -40,14 +40,26 @@ export default function UserModalView(props) {
         </FormBootstrap.Group>
 
         <FormBootstrap.Group className="mb-3">
-          <FormBootstrap.Label>Repita e-mail</FormBootstrap.Label>
+          <FormBootstrap.Label>Password</FormBootstrap.Label>
           <FormBootstrap.Control 
             type="password"
-            id="email2"
-            name="email2" 
-            value={props.user.email2}
-            onChange={props.handleChangeEmail2}
-            placeholder="Repita correo electronico"
+            id="password"
+            name="password" 
+            value={props.user.password}
+            onChange={props.handleChangePassword}
+            placeholder="Ingrese password"
+          />
+        </FormBootstrap.Group>
+
+        <FormBootstrap.Group className="mb-3">
+          <FormBootstrap.Label>Repita password</FormBootstrap.Label>
+          <FormBootstrap.Control 
+            type="password"
+            id="password2"
+            name="password2" 
+            value={props.user.password2}
+            onChange={props.handleChangePassword2}
+            placeholder="Repita password"
           />
         </FormBootstrap.Group>
 

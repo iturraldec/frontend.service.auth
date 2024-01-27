@@ -10,7 +10,6 @@ export default function MyToast(props) {
       style={{ zIndex: 1 }}
     >
       <Toast 
-        show={props.message.length > 0} 
         onClose={props.handleCloseMessage} 
         delay={props.delay > 0 ? `${props.delay} autohide` : null}
       >

@@ -3,6 +3,8 @@ import { BsPencilSquare, BsFillTrash3Fill } from "react-icons/bs";
 import MyPagination from 'components/myPagination';
 
 export default function UsersListView(props) {
+  if(props.users === null) return null;
+
   return (
     <Container>
       <Row className="mt-3 justify-content-center">
@@ -46,7 +48,7 @@ export default function UsersListView(props) {
                 </tbody>
               </Table>
 
-              {/* <MyPagination pageData={props.permissions} onChangePage={props.handleChangePage} /> */}
+              <MyPagination pageData={props.users} onChangePage={props.handleChangePage} />
 
             </Card.Body>
           </Card>

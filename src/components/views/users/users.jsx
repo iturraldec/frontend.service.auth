@@ -7,10 +7,11 @@ import UserModalView from "./userModelView";
 
 //
 const emptyUser = {
-  id:     '',
-  name:   '',
-  email:  '',
-  email2: '',
+  id:         '',
+  name:       '',
+  email:      '',
+  password:   '',
+  password2:  '',
   roles:  []
 };
 
@@ -50,16 +51,6 @@ export default function Users() {
   };
 
   //
-  function handleDelete(id) {
-    Confirm("Seguro de ELIMINAR el usuario?", "No podra reverstir esta acción!", "Si, eliminalo!")
-    .then(result => {
-      if (result.isConfirmed) {
-        console.log("elimino: ",id);
-      };
-    });
-  }
-
-  //
   function handleCloseMessage(){
     setMessage('');
   };
@@ -71,8 +62,16 @@ export default function Users() {
   };
 
   //
-  function handleUpdate(){
-
+  function handleUpdate(_user){
+    setUser({
+      id: _user.id,
+      name: _user.name,
+      email:_user.email,
+      password: '',
+      password2: '',    
+      roles: _user.roles.map(item => item.id)
+    });
+    handleToogleModal();
   };
 
   //
@@ -97,10 +96,18 @@ export default function Users() {
   };
 
   //
-  function handleChangeEmail2(event){
+  function handleChangePassword(event){
     setUser(oldValue => ({
       ...oldValue, 
-      email2: event.target.value
+      password: event.target.value
+    }));
+  };
+
+  //
+  function handleChangePassword2(event){
+    setUser(oldValue => ({
+      ...oldValue, 
+      password2: event.target.value
     }));
   };
 
@@ -130,7 +137,7 @@ export default function Users() {
                   });
     }
     else {
-      response = usersFetch.fetchData(`http://localhost:8000/api/roles/${user.id}`,{
+      response = usersFetch.fetchData(`http://localhost:8000/api/users/${user.id}`,{
                     method: 'put',
                     headers: {
                       'Accept': 'application/json',
@@ -149,29 +156,53 @@ export default function Users() {
   };
 
   //
+  function handleDelete(id) {
+    Confirm("Seguro de ELIMINAR el usuario?")
+    .then(result => {
+      if (result.isConfirmed) {
+        usersFetch.fetchData(`http://localhost:8000/api/users/${id}`,{
+          method: 'delete',
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+        .then(response => {
+          if(response.ok) {
+            console.log(usersFetch.fetchState);
+            if(usersFetch.fetchState.state === 'success') {
+              reload();
+            }  
+          }
+        });
+      };
+    });
+  };
+
+  //
   function reload(){
-    usersFetch.fetchData(usersFetch.fetchState.lastUrl);
+    handleChangePage(usersFetch.fetchState.lastUrl);
   };
 
   //
   return (
     <>
-      <MyToast message={message} handleCloseMessage={handleCloseMessage}/>
+      { message.length > 0 && <MyToast message={message} handleCloseMessage={handleCloseMessage}/>}
 
-      { users && <UsersListView 
+      <UsersListView 
         users={users}
         handleCreate={handleCreate}
         handleUpdate={handleUpdate}
         handleDelete={handleDelete}
         handleChangePage={handleChangePage}
-      />}
+      />
 
       {showModal && <UserModalView 
         roles={roles}
         user={user}
         handleChangeName={handleChangeName}
         handleChangeEmail={handleChangeEmail}
-        handleChangeEmail2={handleChangeEmail2}
+        handleChangePassword={handleChangePassword}
+        handleChangePassword2={handleChangePassword2}
         handleChangeRoles={handleChangeRoles}
         handleSubmit={handleSubmit}
         handleToogleModal={handleToogleModal}
